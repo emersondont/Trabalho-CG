@@ -1,4 +1,4 @@
-# Boilerplate WebGL
+# WebGL
 
 ## Requisitos
 
