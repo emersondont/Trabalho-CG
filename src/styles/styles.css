@@ -1,0 +1,109 @@
+header {
+    background-color: #29283d;
+    color: #fff;
+    padding: 20px 10px;
+}
+
+header nav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+}
+
+header nav a {
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: bold;
+    color: #ff9900;
+}
+
+body {
+    background-color: #1e1e2c;
+}
+
+#background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    border: none;
+    pointer-events: none;
+}
+
+.card-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px;
+    padding: 10PX;
+}
+
+.card {
+    color: #fff;
+    border: solid 2px #fff;
+    border-radius: 4px;
+    padding: 6px;
+    background-color: #1e1e2c;
+}
+
+.card .card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card .card-header button {
+    background-color: #ff9900;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.horizontal-select {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 6px;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+}
+
+.horizontal-select li {
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 5px;
+    margin: 0;
+    border: none;
+    cursor: pointer;
+    list-style-type: none;
+}
+
+.horizontal-select li.selected {
+    border: 3px solid #ff9900;
+}
+
+.group div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 10px;
+    align-items: center;
+}
+
+.group div p{
+    width: 40%;
+}
+
+.group div input {
+    width: 60%;
+    height: 30px;
+}

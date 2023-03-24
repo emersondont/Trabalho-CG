@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Fence",
+        "objHref": "src/obj/fence/fence.obj",
+        "textures": [
+            {
+                "index": "1",
+                "inputColor": "#cd9e58"
+            },
+            {
+                "index": "2",
+                "inputColor": "#5a2f0f"
+            },
+            {
+                "index": "3",
+                "inputColor": "#d0be83"
+            }
+        ]
+    },
+    {
+        "name": "Grass block",
+        "objHref": "src/obj/Minecraft_Grass_Block_OBJ/Grass_Block.obj",
+        "textures": [
+            {
+                "index": "1",
+                "inputColor": "#415028"
+            },
+            {
+                "index": "2",
+                "inputColor": "#443020"
+            }
+        ]
+    }
+]
