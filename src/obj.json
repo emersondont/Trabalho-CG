@@ -30,5 +30,29 @@
                 "inputColor": "#443020"
             }
         ]
+    },
+    {
+        "name": "Chest",
+        "objHref": "src/obj/Chest/Chest.obj",
+        "textures": [
+            {
+                "index": "",
+                "inputColor": "#ad7c16"
+            },
+            {
+                "index": "2",
+                "inputColor": "#0a1519"
+            }
+        ]
+    },
+    {
+        "name": "Wood",
+        "objHref": "src/obj/Wood/Wood.obj",
+        "textures": [
+            {
+                "index": "",
+                "inputColor": "#9d6d35"
+            }
+        ]
     }
 ]
