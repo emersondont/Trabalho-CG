@@ -74,7 +74,7 @@ class Obj {
                     <p>Zoom</p>
                     <input type="range" min="0" max="40" id="zoom${String(this.index)}" value="0">
                 </div>
-                <button id="ani${String(this.index)}">animar</button>
+                <button id="ani${String(this.index)}">Animar</button>
             </div>
 
             ${ulOptions}
@@ -137,8 +137,9 @@ class Obj {
                 this.cameraPosition[0] = 0
                 this.pos = 0
 
-                console.log(this.cameraPosition)
-            }
+                buttonAnimation.innerHTML = "Animar"
+            } else
+                buttonAnimation.innerHTML = "Parar animação"
         })
     }
 

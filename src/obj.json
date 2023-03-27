@@ -36,7 +36,7 @@
         "objHref": "src/obj/Chest/Chest.obj",
         "textures": [
             {
-                "index": "",
+                "index": "1",
                 "inputColor": "#ad7c16"
             },
             {
@@ -50,8 +50,32 @@
         "objHref": "src/obj/Wood/Wood.obj",
         "textures": [
             {
+                "index": "1",
+                "inputColor": "#513917"
+            }
+        ]
+    },
+    {
+        "name": "Obsidian",
+        "objHref": "src/obj/obsidian/obsidian.obj",
+        "textures": [
+            {
                 "index": "",
-                "inputColor": "#9d6d35"
+                "inputColor": "#513917"
+            }
+        ]
+    },
+    {
+        "name": "Bed",
+        "objHref": "src/obj/Bed Minecraft/Bed.obj",
+        "textures": [
+            {
+                "index": "1",
+                "inputColor": "#8b0e07"
+            },
+            {
+                "index": "2",
+                "inputColor": "#d0b102"
             }
         ]
     }

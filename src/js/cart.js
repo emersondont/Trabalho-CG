@@ -50,9 +50,10 @@ class objCart {
         // figure out how far away to move the camera so we can likely
         // see the object.
         var radius = m4.length(range) * 3;
-        const random = Math.random() * (10 + 10) - 10
-        console.log(random)
-        this.cameraTarget = [random, 1, random];
+        const randomX = Math.random() * (8 + 8) - 8
+        const randomY = Math.random() * (4 + 3) - 3
+        
+        this.cameraTarget = [randomX, randomY, 0];
         this.cameraPosition = m4.addVectors(this.cameraTarget, [
             0,
             0,
@@ -202,7 +203,7 @@ class objCart {
         const view = m4.inverse(camera);
 
         const sharedUniforms = {
-            u_lightDirection: m4.normalize([-1.5, 2, 2]),
+            u_lightDirection: m4.normalize([-10, 2, 2]),
             u_view: view,
             u_projection: projection,
             u_viewWorldPosition: this.cameraPosition
