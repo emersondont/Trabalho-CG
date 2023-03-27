@@ -1,3 +1,13 @@
+## To do
+- [x] Todos os objetos devem ser desenhados com WebGL em 3D
+- [x] Rotação
+- [x] Zoom
+- [x] Animação pré-definida da câmera usando curvas
+- [x] O usuário pode clicar no menu e trocar a textura e cor. 
+- [ ] Todos os objetos que o usuário comprar devem aparecer numa visão única.
+- [ ] O menu principal de navegação da página deve usar WebGL, mas não precisa ser 3D
+- [x] O fundo da página deve ser uma animação em WebGL.
+
 # WebGL
 
 ## Requisitos

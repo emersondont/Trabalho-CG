@@ -14,12 +14,17 @@
     <iframe id="background" src="https://webgl2fundamentals.org/webgl/background.html"></iframe>
     <header>
         <nav>
-            <a href="#">Início</a>
-            <a href="#">Meu carrinho</a>
+            <!--a href="#">Início</a-->
+            <button id="open-modal">Meu carrinho</button>
         </nav>
     </header>
 
     <div class="card-section" id="card-section"> </div>
+
+    <div class="modal">
+        <button id="close-modal">X</button>
+        <canvas id="cart-canvas"></canvas>
+    </div>
 
     <!-- Scripts -->
     <script src="https://webgl2fundamentals.org/webgl/resources/twgl-full.min.js"></script>
@@ -30,6 +35,20 @@
     <script src="src/js/utils.js"></script>
     <script src="src/js/parses.js"></script>
     <script src="src/js/obj.js"></script>
+    <script src="src/js/cart.js"></script>
+    <script>
+        const closeModal = document.getElementById("close-modal");
+        const openModal = document.getElementById("open-modal");
+
+        const modal = document.querySelector(".modal");
+
+        closeModal.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+        openModal.addEventListener("click", () => {
+            modal.style.display = "flex";
+        });
+    </script>
 </body>
 
 </html>

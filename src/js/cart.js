@@ -1,27 +1,20 @@
-class Obj {
-    constructor(obj, index) {
-        this.objHref = obj.objHref;
+var objsCart = [];
+
+class objCart {
+    constructor(objHref, index, textureIndex) {
+        this.objHref = objHref;
         this.index = index;
-        this.name = obj.name;
-        this.textures = obj.textures;
-        this.textureIndex = this.textures[0].index;
+        //this.name = obj.name;
+        //this.textures = obj.textures
+        this.textureIndex = textureIndex
         this.cameraTarget;
         this.cameraPosition;
-        this.pos = 0;
-        this.direction = 0; //0 para um lado, 1 para o outro
-        this.ani = false; //se a animação está ligada
         this.yRotation = degToRad(0);
         this.xRotation = degToRad(0);
 
-        this.targetAngleRadians = 100;
-        this.targetRadius = 360;
-        this.fieldOfViewRadians = degToRad(60);
-        this.rotationSpeed = 4.2;
-        this.cameraAngleRadians = Math.PI / 4;
+        //this.insertHTML()
 
-        this.insertHTML()
-
-        this.canvas = document.querySelector('#canvas' + String(index));
+        this.canvas = document.querySelector('#cart-canvas');
         this.gl = this.canvas.getContext("webgl2");
         if (!this.gl) {
             return;
@@ -36,110 +29,6 @@ class Obj {
         this.render = this.render.bind(this);
 
         this.main()
-    }
-
-    insertHTML() {
-        var ulOptions = `<ul id="my-select${this.index}" class="horizontal-select">`
-
-        this.textures.forEach((texture) => {
-            texture.index == "1" ?
-                ulOptions += `<li value="${texture.index}" id="op${texture.index}" class="selected" style="background-color: ${texture.inputColor}";></li>`
-                :
-                ulOptions += `<li value="${texture.index}" id="op${texture.index}" style="background-color: ${texture.inputColor}";></li>`
-        })
-
-        ulOptions += `</ul>`
-
-        const card = `
-        <div class="card">
-            <div class="card-header">
-                <h2>${this.name}</h2>
-                <button id="button-cart${String(this.index)}">Adicionar ao carrinho</button>
-            </div>
-
-            <canvas id="canvas${String(this.index)}"></canvas>
-
-            <div class="group">
-                <div>
-                    <p>Rotação Y</p>
-                    <input type="range" min="0" max="360" id="roty${String(this.index)}" value="0">
-                </div>
-
-                <div>
-                    <p>Rotação X</p>
-                    <input type="range" min="0" max="720" id="rotx${String(this.index)}" value="0">
-                </div>
-
-                <div>
-                    <p>Zoom</p>
-                    <input type="range" min="0" max="40" id="zoom${String(this.index)}" value="0">
-                </div>
-                <button id="ani${String(this.index)}">animar</button>
-            </div>
-
-            ${ulOptions}
-        </div>
-    `
-        const div = document.createElement('div');
-        div.innerHTML = card.trim();
-
-        const cardSection = document.getElementById('card-section');
-        cardSection.appendChild(div.firstChild);
-
-
-        //inputs range
-        const zoom = document.getElementById('zoom' + String(this.index));
-        zoom.addEventListener('input', () => {
-            const val = ((parseInt(zoom.value) * -0.04) + 3.7)
-            this.cameraPosition[2] = val
-        });
-
-        const rotY = document.getElementById('roty' + String(this.index));
-        rotY.addEventListener('input', () => {
-            const val = degToRad(parseInt(rotY.value))
-            this.yRotation = val
-        });
-
-        const rotX = document.getElementById('rotx' + String(this.index));
-        rotX.addEventListener('input', () => {
-            const val = degToRad(parseInt(rotX.value))
-            this.xRotation = val
-        });
-
-
-        //select texture
-        var lis = document.querySelectorAll(`#my-select${this.index} li`);
-        lis.forEach(li => {
-            li.addEventListener('click', () => {
-                lis.forEach(otherLi => {
-                    otherLi.classList.remove('selected');
-                });
-                li.classList.add('selected');
-
-                this.textureIndex = String(li.value)
-                this.loadTexture()
-            });
-        });
-
-
-        //button add to cart
-        const buttonCart = document.getElementById('button-cart' + String(this.index));
-        buttonCart.addEventListener('click', () => {
-            objsCart.push(new objCart(this.objHref, this.index, this.textureIndex))
-            delete objsCart[0]
-        })
-
-        const buttonAnimation = document.getElementById("ani"+String(this.index))
-        buttonAnimation.addEventListener('click', () => {
-            this.ani = !this.ani
-
-            if(!this.ani) {
-                this.cameraPosition[0] = 0
-                this.pos = 0
-
-                console.log(this.cameraPosition)
-            }
-        })
     }
 
     async main() {
@@ -160,8 +49,10 @@ class Obj {
 
         // figure out how far away to move the camera so we can likely
         // see the object.
-        const radius = m4.length(range) * 0.5;
-        this.cameraTarget = [0, 1, 2];
+        var radius = m4.length(range) * 3;
+        const random = Math.random() * (10 + 10) - 10
+        console.log(random)
+        this.cameraTarget = [random, 1, random];
         this.cameraPosition = m4.addVectors(this.cameraTarget, [
             0,
             0,
@@ -170,10 +61,9 @@ class Obj {
         // Set zNear and zFar to something hopefully appropriate
         // for the size of this object.
         this.zNear = radius / 50;
-        this.zFar = radius * 5;
+        this.zFar = radius * 3;
 
         requestAnimationFrame(this.render)
-
     }
 
     async loadTexture() {
@@ -305,18 +195,9 @@ class Obj {
 
         const up = [0, 1, 0];
 
-        //animação aqui
-        //var a = 0;
-        //this.targetAngleRadians += this.rotationSpeed / 60.0;
-        //this.cameraPosition[0] = Math.sin(this.targetAngleRadians) * this.targetRadius;
-        //this.cameraPosition[2] = Math.cos(this.targetAngleRadians) * this.targetRadius;
-        if(this.ani)
-            this.animation()
-        
-        //console.log(this.pos)
         // Compute the camera's matrix using look at.
         const camera = m4.lookAt(this.cameraPosition, this.cameraTarget, up);
-        //const camera = m4.lookAt(cameraPosition, this.objOffset, up);
+
         // Make a view matrix from the camera matrix.
         const view = m4.inverse(camera);
 
@@ -326,6 +207,7 @@ class Obj {
             u_projection: projection,
             u_viewWorldPosition: this.cameraPosition
         };
+
         this.gl.useProgram(this.meshProgramInfo.program);
 
         // calls gl.uniform
@@ -350,32 +232,5 @@ class Obj {
         }
         requestAnimationFrame(this.render)
     }
-
-    animation() {
-        if(this.pos >= 4)
-            this.direction = 1
-        else if(this.pos <= -4)
-            this.direction = 0
-
-        if(this.direction == 0)
-            this.pos += this.rotationSpeed / 60.0
-        else if(this.direction == 1)
-            this.pos -= this.rotationSpeed / 60.0
-        
-        this.cameraPosition[0] = this.pos
-    }
 }
 
-async function loadObjs() {
-    const response = await fetch('src/obj.json');
-    const text = await response.text();
-    const objs = JSON.parse(text);
-
-    const arrayObjs = []
-
-    objs.forEach((obj, indice) => {
-        arrayObjs.push(new Obj(obj, indice))
-    })
-}
-
-loadObjs()
