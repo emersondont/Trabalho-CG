@@ -1,8 +1,7 @@
-class Obj {
+class Background {
     constructor(obj, index) {
         this.objHref = obj.objHref;
         this.index = index;
-        this.name = obj.name;
         this.textures = obj.textures;
         this.textureIndex = this.textures[0].index;
         this.cameraTarget;
@@ -16,16 +15,14 @@ class Obj {
         this.rotationSpeed = 4.2;
         this.cameraAngleRadians = Math.PI / 4;
 
-        this.isAnimated = false; //se a animação está ligada
+        this.isAnimated = true; //se a animação está ligada
 
         this.a = 4; // raio horizontal
         this.b = 4; // raio vertical
         this.c = 3; // raio de profundidade
         this.t = 0; // parâmetro da curva
 
-        this.insertHTML()
-
-        this.canvas = document.querySelector('#canvas' + String(index));
+        this.canvas = document.querySelector("#canvas-background");
         this.gl = this.canvas.getContext("webgl2");
         if (!this.gl) {
             return;
@@ -40,114 +37,6 @@ class Obj {
         this.render = this.render.bind(this);
 
         this.main()
-    }
-
-    insertHTML() {
-        var ulOptions = `<ul id="my-select${this.index}" class="horizontal-select">`
-
-        this.textures.forEach((texture) => {
-            texture.index == "1" ?
-                ulOptions += `<li value="${texture.index}" id="op${texture.index}" class="selected" style="background-color: ${texture.inputColor}";></li>`
-                :
-                ulOptions += `<li value="${texture.index}" id="op${texture.index}" style="background-color: ${texture.inputColor}";></li>`
-        })
-
-        ulOptions += `</ul>`
-
-        const card = `
-        <div class="card">
-            <div class="card-header">
-                <h2>${this.name}</h2>
-                <button id="button-cart${String(this.index)}">Adicionar ao carrinho</button>
-            </div>
-
-            <canvas id="canvas${String(this.index)}"></canvas>
-
-            <div class="group">
-                <div>
-                    <p>Rotação Y</p>
-                    <input type="range" min="0" max="360" id="roty${String(this.index)}" value="0">
-                </div>
-
-                <div>
-                    <p>Rotação X</p>
-                    <input type="range" min="0" max="720" id="rotx${String(this.index)}" value="0">
-                </div>
-
-                <div>
-                    <p>Zoom</p>
-                    <input type="range" min="0" max="40" id="zoom${String(this.index)}" value="0">
-                </div>
-                <button id="ani${String(this.index)}">Animar</button>
-            </div>
-
-            ${ulOptions}
-        </div>
-    `
-        const div = document.createElement('div');
-        div.innerHTML = card.trim();
-
-        const cardSection = document.getElementById('card-section');
-        cardSection.appendChild(div.firstChild);
-
-
-        //inputs range
-        const zoom = document.getElementById('zoom' + String(this.index));
-        zoom.addEventListener('input', () => {
-            const val = ((parseInt(zoom.value) * -0.04) + 3.7)
-            this.cameraPosition[2] = val
-        });
-
-        const rotY = document.getElementById('roty' + String(this.index));
-        rotY.addEventListener('input', () => {
-            const val = degToRad(parseInt(rotY.value))
-            this.yRotation = val
-        });
-
-        const rotX = document.getElementById('rotx' + String(this.index));
-        rotX.addEventListener('input', () => {
-            const val = degToRad(parseInt(rotX.value))
-            this.xRotation = val
-        });
-
-
-        //select texture
-        var lis = document.querySelectorAll(`#my-select${this.index} li`);
-        lis.forEach(li => {
-            li.addEventListener('click', () => {
-                lis.forEach(otherLi => {
-                    otherLi.classList.remove('selected');
-                });
-                li.classList.add('selected');
-
-                this.textureIndex = String(li.value)
-                this.loadTexture()
-            });
-        });
-
-
-        //button add to cart
-        const buttonCart = document.getElementById('button-cart' + String(this.index));
-        buttonCart.addEventListener('click', () => {
-            objsCart.push(new objCart(this.objHref, this.index, this.textureIndex))
-        })
-
-        const buttonAnimation = document.getElementById("ani" + String(this.index))
-        buttonAnimation.addEventListener('click', () => {
-            this.isAnimated = !this.isAnimated
-
-            if (!this.isAnimated) {
-                this.cameraPosition = m4.addVectors(this.cameraTarget, [
-                    0,
-                    0,
-                    this.radius,
-                ]);
-                this.t = 0;
-
-                buttonAnimation.innerHTML = "Animar"
-            } else
-                buttonAnimation.innerHTML = "Parar animação"
-        })
     }
 
     async main() {
@@ -168,7 +57,7 @@ class Obj {
 
         // figure out how far away to move the camera so we can likely
         // see the object.
-        this.radius = m4.length(range) * 0.5;
+        this.radius = m4.length(range) * 4;
         this.c = this.radius
         this.cameraTarget = [0, 1, 2];
         this.cameraPosition = m4.addVectors(this.cameraTarget, [
@@ -313,7 +202,7 @@ class Obj {
 
         const up = [0, 1, 0];
 
-        
+
         if (this.isAnimated)
             this.animation()
 
@@ -367,16 +256,15 @@ class Obj {
     }
 }
 
-async function loadObjs() {
-    const response = await fetch('src/obj.json');
-    const text = await response.text();
-    const objs = JSON.parse(text);
+var back = new Background(
+    {
+        objHref: "Minecraft_Grass_Block_OBJ/Grass_Block.obj",
+        textures: [
+            {
+                "index": "1",
+                "inputColor": "#cd9e58"
+            }
+        ]
+    }
+)
 
-    const arrayObjs = []
-
-    objs.forEach((obj, indice) => {
-        arrayObjs.push(new Obj(obj, indice))
-    }) 
-}
-
-loadObjs()

@@ -43,8 +43,8 @@ body {
 
 .card-section {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 50px;
     padding: 10PX;
 }
 
