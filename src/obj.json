@@ -60,8 +60,8 @@
         "objHref": "src/obj/obsidian/obsidian.obj",
         "textures": [
             {
-                "index": "",
-                "inputColor": "#513917"
+                "index": "1",
+                "inputColor": "#140415"
             }
         ]
     },

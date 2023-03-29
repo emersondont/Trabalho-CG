@@ -7,9 +7,6 @@ class Obj {
         this.textureIndex = this.textures[0].index;
         this.cameraTarget;
         this.cameraPosition;
-        this.pos = 0;
-        this.direction = 0; //0 para um lado, 1 para o outro
-        this.ani = false; //se a animação está ligada
         this.yRotation = degToRad(0);
         this.xRotation = degToRad(0);
 
@@ -18,6 +15,13 @@ class Obj {
         this.fieldOfViewRadians = degToRad(60);
         this.rotationSpeed = 4.2;
         this.cameraAngleRadians = Math.PI / 4;
+
+        this.isAnimated = false; //se a animação está ligada
+
+        this.a = 4; // raio horizontal
+        this.b = 4; // raio vertical
+        this.c = 3; // raio de profundidade
+        this.t = 0; // parâmetro da curva
 
         this.insertHTML()
 
@@ -126,16 +130,19 @@ class Obj {
         const buttonCart = document.getElementById('button-cart' + String(this.index));
         buttonCart.addEventListener('click', () => {
             objsCart.push(new objCart(this.objHref, this.index, this.textureIndex))
-            delete objsCart[0]
         })
 
-        const buttonAnimation = document.getElementById("ani"+String(this.index))
+        const buttonAnimation = document.getElementById("ani" + String(this.index))
         buttonAnimation.addEventListener('click', () => {
-            this.ani = !this.ani
+            this.isAnimated = !this.isAnimated
 
-            if(!this.ani) {
-                this.cameraPosition[0] = 0
-                this.pos = 0
+            if (!this.isAnimated) {
+                this.cameraPosition = m4.addVectors(this.cameraTarget, [
+                    0,
+                    0,
+                    this.radius,
+                ]);
+                this.t = 0;
 
                 buttonAnimation.innerHTML = "Animar"
             } else
@@ -161,20 +168,20 @@ class Obj {
 
         // figure out how far away to move the camera so we can likely
         // see the object.
-        const radius = m4.length(range) * 0.5;
+        this.radius = m4.length(range) * 0.5;
+        this.c = this.radius
         this.cameraTarget = [0, 1, 2];
         this.cameraPosition = m4.addVectors(this.cameraTarget, [
             0,
             0,
-            radius,
+            this.radius,
         ]);
         // Set zNear and zFar to something hopefully appropriate
         // for the size of this object.
-        this.zNear = radius / 50;
-        this.zFar = radius * 5;
+        this.zNear = this.radius / 50;
+        this.zFar = this.radius * 5;
 
         requestAnimationFrame(this.render)
-
     }
 
     async loadTexture() {
@@ -306,15 +313,10 @@ class Obj {
 
         const up = [0, 1, 0];
 
-        //animação aqui
-        //var a = 0;
-        //this.targetAngleRadians += this.rotationSpeed / 60.0;
-        //this.cameraPosition[0] = Math.sin(this.targetAngleRadians) * this.targetRadius;
-        //this.cameraPosition[2] = Math.cos(this.targetAngleRadians) * this.targetRadius;
-        if(this.ani)
-            this.animation()
         
-        //console.log(this.pos)
+        if (this.isAnimated)
+            this.animation()
+
         // Compute the camera's matrix using look at.
         const camera = m4.lookAt(this.cameraPosition, this.cameraTarget, up);
         //const camera = m4.lookAt(cameraPosition, this.objOffset, up);
@@ -353,17 +355,15 @@ class Obj {
     }
 
     animation() {
-        if(this.pos >= 4)
-            this.direction = 1
-        else if(this.pos <= -4)
-            this.direction = 0
+        const x = this.a * Math.cos(this.t);
+        const y = this.b * Math.sin(this.t);
+        const z = this.c * Math.sin(this.t);
 
-        if(this.direction == 0)
-            this.pos += this.rotationSpeed / 60.0
-        else if(this.direction == 1)
-            this.pos -= this.rotationSpeed / 60.0
-        
-        this.cameraPosition[0] = this.pos
+        this.cameraPosition[0] = x;
+        this.cameraPosition[1] = y;
+        this.cameraPosition[2] = z;
+
+        this.t += 0.01
     }
 }
 
