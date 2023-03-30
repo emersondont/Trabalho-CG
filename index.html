@@ -10,7 +10,6 @@
 </head>
 
 <body>
-    <!-- por enquanto vai ficar assim -->
     <iframe id="background" src="./src/background/index.html"></iframe>
     <header>
         <nav>
@@ -22,7 +21,18 @@
     <div class="card-section" id="card-section"> </div>
 
     <div class="modal">
-        <button id="close-modal">X</button>
+        <div class="group-buttons-cart">
+            <button id="empty-cart">Esvaziar carrinho</button>
+            <button id="close-modal">X</button>
+        </div>
+
+        <button id="buy">Finalizar compra</button>
+        <div class="buy-card">
+            <button id="close-buy-modal">X</button>
+            <p id="desc-buy">Sua compra deu R$50,00. Faça o pix ⬇</p>
+            <img src="src/img/qrcode-pix.png" alt="QR Code pix">
+        </div>
+
         <canvas id="cart-canvas"></canvas>
     </div>
 
@@ -34,19 +44,26 @@
     <script src="src/js/webgl.js"></script>
     <script src="src/js/utils.js"></script>
     <script src="src/js/parses.js"></script>
-    <script src="src/js/obj.js"></script>
     <script src="src/js/cart.js"></script>
+    <script src="src/js/obj.js"></script>
     <script>
         const closeModal = document.getElementById("close-modal");
         const openModal = document.getElementById("open-modal");
+        const closeBuyModal = document.getElementById("close-buy-modal");
 
         const modal = document.querySelector(".modal");
+        const buyModal = document.querySelector(".buy-card");
 
         closeModal.addEventListener("click", () => {
             modal.style.display = "none";
+            buyModal.style.display = "none";
         });
         openModal.addEventListener("click", () => {
             modal.style.display = "flex";
+        });
+
+        closeBuyModal.addEventListener("click", () => {
+            buyModal.style.display = "none";
         });
     </script>
 </body>

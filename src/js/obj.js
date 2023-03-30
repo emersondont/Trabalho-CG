@@ -20,10 +20,17 @@ class Obj {
 
         this.a = 4; // raio horizontal
         this.b = 4; // raio vertical
-        this.c = 3; // raio de profundidade
+        this.c = 4; // raio de profundidade
         this.t = 0; // parâmetro da curva
 
+        this.animationCoords;
+        this.indexCoordsCurve;
+
+        this.translationLocation;
+        this.objPosition = [0, 0, 0];
+
         this.insertHTML()
+        this.buttonMeuCarrinhoHTML = document.getElementById("open-modal");
 
         this.canvas = document.querySelector('#canvas' + String(index));
         this.gl = this.canvas.getContext("webgl2");
@@ -35,7 +42,6 @@ class Obj {
             vertexShaderSource,
             fragmentShaderSource,
         ]);
-
 
         this.render = this.render.bind(this);
 
@@ -94,7 +100,7 @@ class Obj {
         //inputs range
         const zoom = document.getElementById('zoom' + String(this.index));
         zoom.addEventListener('input', () => {
-            const val = ((parseInt(zoom.value) * -0.04) + 3.7)
+            const val = ((parseInt(zoom.value) * -0.08) + 5.5)
             this.cameraPosition[2] = val
         });
 
@@ -128,8 +134,10 @@ class Obj {
 
         //button add to cart
         const buttonCart = document.getElementById('button-cart' + String(this.index));
-        buttonCart.addEventListener('click', () => {
-            objsCart.push(new objCart(this.objHref, this.index, this.textureIndex))
+        buttonCart.addEventListener('click', async () => {
+            //objsCart.push(new objCart(this.objHref, this.index, this.textureIndex))
+            await cart.newObj(this.objHref, this.textureIndex)
+            this.buttonMeuCarrinhoHTML.innerHTML = `Meu carrinho(${cart.getCount()})`
         })
 
         const buttonAnimation = document.getElementById("ani" + String(this.index))
@@ -168,18 +176,32 @@ class Obj {
 
         // figure out how far away to move the camera so we can likely
         // see the object.
-        this.radius = m4.length(range) * 0.5;
+        this.radius = m4.length(range) * 0.5 * 4;
         this.c = this.radius
-        this.cameraTarget = [0, 1, 2];
+        this.cameraTarget = [0, 1, 0];
         this.cameraPosition = m4.addVectors(this.cameraTarget, [
             0,
             0,
             this.radius,
         ]);
+
+        this.animationCoords = [
+            [0, 0, this.radius],
+            [2, 2, this.radius],
+            [4, 4, this.radius/2],
+            [-2, 2, this.radius*(-1)],
+            [-4, 0, (this.radius/2)*(-1)],
+            [-2, -2, (this.radius)*(-1)],
+            [0, 0, this.radius]
+        ];
+        this.indexCoordsCurve = 0
+
         // Set zNear and zFar to something hopefully appropriate
         // for the size of this object.
         this.zNear = this.radius / 50;
         this.zFar = this.radius * 5;
+
+        this.translationLocation = this.gl.getUniformLocation(this.meshProgramInfo.program, "u_translation")
 
         requestAnimationFrame(this.render)
     }
@@ -313,7 +335,6 @@ class Obj {
 
         const up = [0, 1, 0];
 
-        
         if (this.isAnimated)
             this.animation()
 
@@ -341,6 +362,8 @@ class Obj {
         u_world = m4.yRotation(this.yRotation);
         u_world = m4.multiply(m4.xRotation(this.xRotation), u_world);
 
+        this.gl.uniform3f(this.translationLocation, this.objPosition[0], this.objPosition[1], this.objPosition[2]);
+
         for (const { bufferInfo, vao, material } of this.parts) {
             // set the attributes for this part.
             this.gl.bindVertexArray(vao);
@@ -351,19 +374,29 @@ class Obj {
             // calls gl.drawArrays or gl.drawElements
             twgl.drawBufferInfo(this.gl, bufferInfo);
         }
+
         requestAnimationFrame(this.render)
     }
 
     animation() {
-        const x = this.a * Math.cos(this.t);
-        const y = this.b * Math.sin(this.t);
-        const z = this.c * Math.sin(this.t);
-
+        //curva bezier
+        const x = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][0] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve+1][0] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve+2][0] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve+3][0];
+        const y = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][1] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve+1][1] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve+2][1] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve+3][1];
+        const z = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][2] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve+1][2] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve+2][2] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve+3][2];
+        
         this.cameraPosition[0] = x;
         this.cameraPosition[1] = y;
         this.cameraPosition[2] = z;
 
-        this.t += 0.01
+        this.t += 0.008
+
+        if(this.t >= 1) {
+            this.t = 0;
+            if(this.indexCoordsCurve == 0)
+                this.indexCoordsCurve = 3;
+            else
+                this.indexCoordsCurve = 0;
+        }
     }
 }
 
@@ -376,7 +409,9 @@ async function loadObjs() {
 
     objs.forEach((obj, indice) => {
         arrayObjs.push(new Obj(obj, indice))
-    }) 
+    })
 }
+
+var cart = new Cart();
 
 loadObjs()

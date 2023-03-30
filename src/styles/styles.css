@@ -2,6 +2,9 @@ header {
     background-color: #29283d;
     color: #fff;
     padding: 20px 10px;
+    position: fixed;
+    top: 0;
+    width: 100%;
 }
 
 header nav {
@@ -45,7 +48,9 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 50px;
-    padding: 10PX;
+    padding: 10px;
+
+    margin-top: 70px;
 }
 
 .card {
@@ -149,10 +154,16 @@ body {
     z-index: 9999;
 }
 
-.modal button {
+.modal .group-buttons-cart {
     position: fixed;
-    top: 5%;
-    right: 5%;
+    top: 10%;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 5%;
+}
+
+.modal .group-buttons-cart button, #buy {
     background-color: transparent;
     border: none;
     color: #ff9900;
@@ -161,14 +172,57 @@ body {
     cursor: pointer;
 }
 
-.modal button:hover {
+#buy {
+    position: fixed;
+    top: 85%;
+    border: 2px solid #ff9900;
+    padding: 8px;
+    border-radius: 8px;
+
+}
+
+#buy:hover {
     color: #ff6600;
+    border-color: #ff6600;
+}
+
+
+.modal .group-buttons-cart button:hover {
+    color: #ff6600;
+}
+
+.buy-card {
+    position: fixed;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #1e1e2c;
+    border: 2px solid #ff9900;
+    padding: 10px 0;
+}
+
+.buy-card p {
+    text-align: center;
+    color: #ff9900;
+    font-size: 24px;
+}
+
+.buy-card button {
+    position: relative;
+    background-color: transparent;
+    border: none;
+    color: #ff9900;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    width: auto;
+    left: 45%;
 }
 
 #cart-canvas {
     background-color: #1e1e2c;
     width: 95%;
-    height: 95%;
+    height: 90%;
     border: 2px solid #fff;
     border-radius: 2px;
 }

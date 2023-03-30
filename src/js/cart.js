@@ -1,18 +1,18 @@
-var objsCart = [];
-
-class objCart {
-    constructor(objHref, index, textureIndex) {
-        this.objHref = objHref;
-        this.index = index;
-        //this.name = obj.name;
-        //this.textures = obj.textures
-        this.textureIndex = textureIndex
+class Cart {
+    constructor() {
+        this.objHref;
+        this.textureIndex;
         this.cameraTarget;
         this.cameraPosition;
         this.yRotation = degToRad(0);
         this.xRotation = degToRad(0);
 
-        //this.insertHTML()
+        this.translationLocation = [];
+        this.objPosition = [];
+        this.parts = [];
+        this.objOffset = [];
+
+        this.countObj = 0;
 
         this.canvas = document.querySelector('#cart-canvas');
         this.gl = this.canvas.getContext("webgl2");
@@ -25,10 +25,89 @@ class objCart {
             fragmentShaderSource,
         ]);
 
-
         this.render = this.render.bind(this);
 
-        this.main()
+        var radius = 10;
+
+        this.cameraTarget = [0, 1, 0];
+        this.cameraPosition = m4.addVectors(this.cameraTarget, [
+            0,
+            0,
+            radius,
+        ]);
+
+        // Set zNear and zFar to something hopefully appropriate
+        // for the size of this object.
+        this.zNear = radius / 50;
+        this.zFar = radius * 3;
+
+        this.animationCoords = [
+            [0, 0, radius],
+            [15, 0, radius / 2],
+            [20, 0, radius / 2],
+            [0, 0, radius * (-1)]
+        ];
+
+        this.t = 0;
+        this.indexCoordsCurve = 0;
+
+        //HTML
+        const emptyButton = document.getElementById("empty-cart");
+        emptyButton.addEventListener("click", () => {
+            this.countObj = 0;
+
+            this.translationLocation.length = 0
+            this.objPosition.length = 0
+            this.parts.length = 0
+            this.objOffset.length = 0
+
+            this.gl.clearColor(0.1176, 0.1176, 0.1725, 1); // Define a cor de limpeza para preto
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT); // Limpa o buffer de cor e profundidade
+
+            const buttonMeuCarrinhoHTML = document.getElementById("open-modal");
+            buttonMeuCarrinhoHTML.innerHTML = `Meu carrinho`
+        });
+
+        const buyButton = document.getElementById("buy");
+        buyButton.addEventListener("click", () => {
+            if (this.countObj == 0) {
+                alert("Como que tu vai finalizar a compra se teu carrinho ta vazio?")
+            }
+            else {
+                const buyModal = document.querySelector(".buy-card");
+                const p = document.getElementById("desc-buy");
+
+                buyModal.style.display = "flex";
+                p.innerHTML = `Sua compra deu R$${this.countObj*50},00. Faça o pix ⬇`
+            }
+
+
+        });
+
+        requestAnimationFrame(this.render)
+    }
+
+    getCount() {
+        return this.countObj
+    }
+
+    async newObj(objHref, textureIndex) {
+        if (this.countObj == 10) {
+            alert("Pare homi, seu carrinho já está cheio!")
+        }
+        else {
+            this.objHref = objHref;
+            this.textureIndex = textureIndex;
+
+            //de - 9 a 9, para 10 obj
+            const x = 1.8 * this.countObj - 8
+
+            this.objPosition.push([x, 0, 0])
+
+            await this.main()
+
+            this.countObj++;
+        }
     }
 
     async main() {
@@ -41,30 +120,15 @@ class objCart {
         const extents = this.getGeometriesExtents(this.obj.geometries);
         const range = m4.subtractVectors(extents.max, extents.min);
         // amount to move the object so its center is at the origin
-        this.objOffset = m4.scaleVector(
-            m4.addVectors(
-                extents.min,
-                m4.scaleVector(range, 0.5)),
-            -1);
+        this.objOffset.push(
+            m4.scaleVector(
+                m4.addVectors(
+                    extents.min,
+                    m4.scaleVector(range, 0.5)),
+                -1)
+        )
 
-        // figure out how far away to move the camera so we can likely
-        // see the object.
-        var radius = m4.length(range) * 3;
-        const randomX = Math.random() * (8 + 8) - 8
-        const randomY = Math.random() * (4 + 3) - 3
-        
-        this.cameraTarget = [randomX, randomY, 0];
-        this.cameraPosition = m4.addVectors(this.cameraTarget, [
-            0,
-            0,
-            radius,
-        ]);
-        // Set zNear and zFar to something hopefully appropriate
-        // for the size of this object.
-        this.zNear = radius / 50;
-        this.zFar = radius * 3;
-
-        requestAnimationFrame(this.render)
+        this.translationLocation.push(this.gl.getUniformLocation(this.meshProgramInfo.program, "u_translation"))
     }
 
     async loadTexture() {
@@ -115,7 +179,7 @@ class objCart {
             opacity: 1,
         };
 
-        this.parts = this.obj.geometries.map(({ material, data }) => {
+        this.parts.push(this.obj.geometries.map(({ material, data }) => {
             if (data.color) {
                 if (data.position.length === data.color.length) {
                     // it's 3. The our helper library assumes 4 so we need
@@ -156,7 +220,8 @@ class objCart {
                 bufferInfo,
                 vao,
             };
-        });
+        })
+        )
     }
 
     getExtents(positions) {
@@ -186,50 +251,58 @@ class objCart {
     }
 
     render() {
-        twgl.resizeCanvasToDisplaySize(this.gl.canvas);
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-        this.gl.enable(this.gl.DEPTH_TEST);
 
-        const fieldOfViewRadians = degToRad(60);
-        const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
-        const projection = m4.perspective(fieldOfViewRadians, aspect, this.zNear, this.zFar);
+        if (this.countObj != 0) {
 
-        const up = [0, 1, 0];
+            twgl.resizeCanvasToDisplaySize(this.gl.canvas);
+            this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+            this.gl.enable(this.gl.DEPTH_TEST);
 
-        // Compute the camera's matrix using look at.
-        const camera = m4.lookAt(this.cameraPosition, this.cameraTarget, up);
+            const fieldOfViewRadians = degToRad(60);
+            const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
+            const projection = m4.perspective(fieldOfViewRadians, aspect, this.zNear, this.zFar);
 
-        // Make a view matrix from the camera matrix.
-        const view = m4.inverse(camera);
+            const up = [0, 1, 0];
 
-        const sharedUniforms = {
-            u_lightDirection: m4.normalize([-10, 2, 2]),
-            u_view: view,
-            u_projection: projection,
-            u_viewWorldPosition: this.cameraPosition
-        };
+            // Compute the camera's matrix using look at.
+            const camera = m4.lookAt(this.cameraPosition, this.cameraTarget, up);
 
-        this.gl.useProgram(this.meshProgramInfo.program);
+            // Make a view matrix from the camera matrix.
+            const view = m4.inverse(camera);
 
-        // calls gl.uniform
-        twgl.setUniforms(this.meshProgramInfo, sharedUniforms);
+            const sharedUniforms = {
+                u_lightDirection: m4.normalize([-10, 2, 2]),
+                u_view: view,
+                u_projection: projection,
+                u_viewWorldPosition: this.cameraPosition
+            };
 
-        // compute the world matrix once since all parts
-        // are at the same space.
-        let u_world = m4.identity();
-        u_world = m4.translate(u_world, ...this.objOffset);
-        u_world = m4.yRotation(this.yRotation);
-        u_world = m4.multiply(m4.xRotation(this.xRotation), u_world);
+            this.gl.useProgram(this.meshProgramInfo.program);
 
-        for (const { bufferInfo, vao, material } of this.parts) {
-            // set the attributes for this part.
-            this.gl.bindVertexArray(vao);
             // calls gl.uniform
-            twgl.setUniforms(this.meshProgramInfo, {
-                u_world,
-            }, material);
-            // calls gl.drawArrays or gl.drawElements
-            twgl.drawBufferInfo(this.gl, bufferInfo);
+            twgl.setUniforms(this.meshProgramInfo, sharedUniforms);
+
+
+            //passa por todos obj e imprime
+            for (let i = 0; i < this.countObj; i++) {
+                // compute the world matrix once since all parts
+                // are at the same space.
+                let u_world = m4.identity();
+                u_world = m4.translate(u_world, ...this.objOffset[i]);
+
+                this.gl.uniform3f(this.translationLocation[i], this.objPosition[i][0], this.objPosition[i][1], this.objPosition[i][2]);
+
+                for (const { bufferInfo, vao, material } of this.parts[i]) {
+                    // set the attributes for this part.
+                    this.gl.bindVertexArray(vao);
+                    // calls gl.uniform
+                    twgl.setUniforms(this.meshProgramInfo, {
+                        u_world,
+                    }, material);
+                    // calls gl.drawArrays or gl.drawElements
+                    twgl.drawBufferInfo(this.gl, bufferInfo);
+                }
+            }
         }
         requestAnimationFrame(this.render)
     }
