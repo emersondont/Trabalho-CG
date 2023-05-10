@@ -32,6 +32,8 @@ class Obj {
         this.insertHTML()
         this.buttonMeuCarrinhoHTML = document.getElementById("open-modal");
 
+        this.arrowOrientationUp = true
+
         this.canvas = document.querySelector('#canvas' + String(index));
         this.gl = this.canvas.getContext("webgl2");
         if (!this.gl) {
@@ -64,12 +66,12 @@ class Obj {
         <div class="card">
             <div class="card-header">
                 <h2>${this.name}</h2>
-                <button id="button-cart${String(this.index)}">Adicionar ao carrinho</button>
+                <p>$49.99</p>
             </div>
 
             <canvas id="canvas${String(this.index)}"></canvas>
-
-            <div class="group">
+            <p class="arrow" id="arrow${String(this.index)}">▲</p>
+            <div class="group" id="group${String(this.index)}">
                 <div>
                     <p>Rotação Y</p>
                     <input type="range" min="0" max="360" id="roty${String(this.index)}" value="0">
@@ -84,10 +86,11 @@ class Obj {
                     <p>Zoom</p>
                     <input type="range" min="0" max="40" id="zoom${String(this.index)}" value="0">
                 </div>
-                <button id="ani${String(this.index)}">Animar</button>
             </div>
 
             ${ulOptions}
+
+            <button class="button-cart" id="button-cart${String(this.index)}">Add to cart</button>
         </div>
     `
         const div = document.createElement('div');
@@ -95,7 +98,6 @@ class Obj {
 
         const cardSection = document.getElementById('card-section');
         cardSection.appendChild(div.firstChild);
-
 
         //inputs range
         const zoom = document.getElementById('zoom' + String(this.index));
@@ -137,25 +139,41 @@ class Obj {
         buttonCart.addEventListener('click', async () => {
             //objsCart.push(new objCart(this.objHref, this.index, this.textureIndex))
             await cart.newObj(this.objHref, this.textureIndex)
-            this.buttonMeuCarrinhoHTML.innerHTML = `Meu carrinho(${cart.getCount()})`
+            this.buttonMeuCarrinhoHTML.innerHTML = `My cart(${cart.getCount()})`
         })
 
-        const buttonAnimation = document.getElementById("ani" + String(this.index))
-        buttonAnimation.addEventListener('click', () => {
-            this.isAnimated = !this.isAnimated
+        const group = document.getElementById(`group${String(this.index)}`);
+        group.className = 'group-hidden'
 
-            if (!this.isAnimated) {
-                this.cameraPosition = m4.addVectors(this.cameraTarget, [
-                    0,
-                    0,
-                    this.radius,
-                ]);
-                this.t = 0;
-
-                buttonAnimation.innerHTML = "Animar"
-            } else
-                buttonAnimation.innerHTML = "Parar animação"
+        const arrow = document.getElementById(`arrow${String(this.index)}`);
+        arrow.addEventListener('click', () => {
+            this.arrowOrientationUp =! this.arrowOrientationUp
+            if(this.arrowOrientationUp) {
+                arrow.textContent = '▲'
+                group.className = 'group-hidden'
+            }
+            else {
+                arrow.textContent = '▼'
+                group.className = 'group'
+            }
         })
+
+        const canvasElement = document.getElementById(`canvas${String(this.index)}`);
+
+        canvasElement.onmouseover = () => {
+            this.isAnimated = true
+        }
+
+        canvasElement.onmouseleave = () => {
+            this.isAnimated = false
+
+            this.cameraPosition = m4.addVectors(this.cameraTarget, [
+                0,
+                0,
+                this.radius,
+            ]);
+            this.t = 0;
+        }
     }
 
     async main() {
@@ -188,10 +206,10 @@ class Obj {
         this.animationCoords = [
             [0, 0, this.radius],
             [2, 2, this.radius],
-            [4, 4, this.radius/2],
-            [-2, 2, this.radius*(-1)],
-            [-4, 0, (this.radius/2)*(-1)],
-            [-2, -2, (this.radius)*(-1)],
+            [4, 4, this.radius / 2],
+            [-2, 2, this.radius * (-1)],
+            [-4, 0, (this.radius / 2) * (-1)],
+            [-2, -2, (this.radius) * (-1)],
             [0, 0, this.radius]
         ];
         this.indexCoordsCurve = 0
@@ -380,19 +398,19 @@ class Obj {
 
     animation() {
         //curva bezier
-        const x = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][0] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve+1][0] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve+2][0] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve+3][0];
-        const y = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][1] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve+1][1] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve+2][1] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve+3][1];
-        const z = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][2] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve+1][2] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve+2][2] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve+3][2];
-        
+        const x = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][0] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve + 1][0] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve + 2][0] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve + 3][0];
+        const y = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][1] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve + 1][1] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve + 2][1] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve + 3][1];
+        const z = Math.pow(1 - this.t, 3) * this.animationCoords[this.indexCoordsCurve][2] + 3 * this.t * Math.pow(1 - this.t, 2) * this.animationCoords[this.indexCoordsCurve + 1][2] + 3 * Math.pow(this.t, 2) * (1 - this.t) * this.animationCoords[this.indexCoordsCurve + 2][2] + Math.pow(this.t, 3) * this.animationCoords[this.indexCoordsCurve + 3][2];
+
         this.cameraPosition[0] = x;
         this.cameraPosition[1] = y;
         this.cameraPosition[2] = z;
 
         this.t += 0.008
 
-        if(this.t >= 1) {
+        if (this.t >= 1) {
             this.t = 0;
-            if(this.indexCoordsCurve == 0)
+            if (this.indexCoordsCurve == 0)
                 this.indexCoordsCurve = 3;
             else
                 this.indexCoordsCurve = 0;

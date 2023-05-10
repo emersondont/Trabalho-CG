@@ -46,8 +46,8 @@ body {
 
 .card-section {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 50px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 2%;
     padding: 10px;
 
     margin-top: 70px;
@@ -57,7 +57,7 @@ body {
     color: #fff;
     border: solid 2px #fff;
     border-radius: 4px;
-    padding: 6px;
+    padding: 4%;
     background-color: #1e1e2c;
 }
 
@@ -68,15 +68,30 @@ body {
     align-items: center;
 }
 
-.card .card-header button {
+.card .card-header h2{
+    margin: 0;
+}
+
+.card .card-header p {
+    color: #ff9900;
+    font-weight: bold;
+    font-size: 22px;
+    margin: 0;
+}
+
+.button-cart {
     background-color: #ff9900;
     border: none;
     color: #fff;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 16px;
     padding: 10px;
     cursor: pointer;
+    width: 100%;
+    border-radius: 2px;
 }
-.card .card-header button:hover {
+
+.button-cart:hover {
     background-color: #ff6600;
 }
 
@@ -93,10 +108,10 @@ body {
 }
 
 .horizontal-select li {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     background-color: #fff;
-    border-radius: 15px;
+    border-radius: 14px;
     padding: 5px;
     margin: 0;
     border: none;
@@ -106,6 +121,24 @@ body {
 
 .horizontal-select li.selected {
     border: 3px solid #ff9900;
+}
+
+.arrow {
+    width: 100%;
+    writing-mode: vertical-rl;
+    margin: 0;
+    padding: 0 5%;
+    color: #ff9900;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.arrow:hover {
+    color: #ff6600;
+}
+
+.group-hidden {
+    display: none;
 }
 
 .group div {

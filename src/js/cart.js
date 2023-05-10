@@ -41,16 +41,6 @@ class Cart {
         this.zNear = radius / 50;
         this.zFar = radius * 3;
 
-        this.animationCoords = [
-            [0, 0, radius],
-            [15, 0, radius / 2],
-            [20, 0, radius / 2],
-            [0, 0, radius * (-1)]
-        ];
-
-        this.t = 0;
-        this.indexCoordsCurve = 0;
-
         //HTML
         const emptyButton = document.getElementById("empty-cart");
         emptyButton.addEventListener("click", () => {
@@ -99,7 +89,7 @@ class Cart {
             this.objHref = objHref;
             this.textureIndex = textureIndex;
 
-            //de - 9 a 9, para 10 obj
+            //de - 8 a 8, para 10 obj
             const x = 1.8 * this.countObj - 8
 
             this.objPosition.push([x, 0, 0])
