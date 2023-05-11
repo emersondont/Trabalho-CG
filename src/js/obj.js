@@ -70,7 +70,7 @@ class Obj {
             </div>
 
             <canvas id="canvas${String(this.index)}"></canvas>
-            <p class="arrow" id="arrow${String(this.index)}">▲</p>
+            <p class="arrow" id="arrow${String(this.index)}">▼</p>
             <div class="group" id="group${String(this.index)}">
                 <div>
                     <p>Rotação Y</p>
@@ -147,13 +147,13 @@ class Obj {
 
         const arrow = document.getElementById(`arrow${String(this.index)}`);
         arrow.addEventListener('click', () => {
-            this.arrowOrientationUp =! this.arrowOrientationUp
-            if(this.arrowOrientationUp) {
-                arrow.textContent = '▲'
+            this.arrowOrientationUp = !this.arrowOrientationUp
+            if (this.arrowOrientationUp) {
+                arrow.textContent = '▼'
                 group.className = 'group-hidden'
             }
             else {
-                arrow.textContent = '▼'
+                arrow.textContent = '▲'
                 group.className = 'group'
             }
         })
@@ -174,6 +174,22 @@ class Obj {
             ]);
             this.t = 0;
         }
+        //
+
+        canvasElement.addEventListener('touchstart', function () {
+            this.isAnimated = true
+        })
+
+        canvasElement.addEventListener('touchend', function() {
+            this.isAnimated = false
+
+            this.cameraPosition = m4.addVectors(this.cameraTarget, [
+                0,
+                0,
+                this.radius,
+            ]);
+            this.t = 0;
+        })
     }
 
     async main() {

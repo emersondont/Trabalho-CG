@@ -57,7 +57,7 @@ class Cart {
             const buttonMeuCarrinhoHTML = document.getElementById("open-modal");
             buttonMeuCarrinhoHTML.innerHTML = `Meu carrinho`
         });
-
+        /*
         const buyButton = document.getElementById("buy");
         buyButton.addEventListener("click", () => {
             if (this.countObj == 0) {
@@ -73,6 +73,7 @@ class Cart {
 
 
         });
+        */
 
         requestAnimationFrame(this.render)
     }

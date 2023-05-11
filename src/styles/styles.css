@@ -49,6 +49,10 @@ body {
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 2%;
     padding: 10px;
+    grid-auto-rows: auto;
+    /* altura diferente para cada card */
+    align-items: start;
+    /* alinhar cards no topo */
 
     margin-top: 70px;
 }
@@ -68,7 +72,7 @@ body {
     align-items: center;
 }
 
-.card .card-header h2{
+.card .card-header h2 {
     margin: 0;
 }
 
@@ -196,7 +200,8 @@ body {
     padding: 0 5%;
 }
 
-.modal .group-buttons-cart button, #buy {
+.modal .group-buttons-cart button,
+#buy {
     background-color: transparent;
     border: none;
     color: #ff9900;
@@ -260,3 +265,33 @@ body {
     border-radius: 2px;
 }
 
+
+@media screen and (min-width: 320px) {
+    .card-section {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+@media screen and (min-width: 480px) {
+    .card-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .card-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .card-section {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media screen and (min-width: 1440px) {
+    .card-section {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
