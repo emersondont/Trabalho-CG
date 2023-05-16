@@ -1,3 +1,8 @@
+# [Minecraft 3d store]([https://minecraft-3d-store.vercel.app/])
+
+O projeto "Trabalho-CG" é um trabalho desenvolvido para a disciplina de Computação Gráfica no curso de Ciência da Computação da UFPel. Trata-se de uma loja de objetos 3d onde os usuários podem explorar e adquirir modelos tridimensionais de forma intuitiva. 
+
+
 ## To do
 - [x] Todos os objetos devem ser desenhados com WebGL em 3D
 - [x] Rotação
